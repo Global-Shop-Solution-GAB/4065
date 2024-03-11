@@ -1,0 +1,55 @@
+Program.Sub.ScreenSU.Start
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+'Coded by:SFF 10/31/2014- Customer Specific for Custom Work Order to print from WO View Screen
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+V.Local.sParams.Declare(String)
+V.Local.sJob.DECLARE(String)
+V.Local.sSuf.Declare(String)
+V.Local.sRptID.Declare(String)
+
+
+'rename script 3 button on populate hook
+F.Intrinsic.Control.If(V.Caller.Hook,=,"13580")
+	V.Passed.000059.Set("Print Press WO")
+F.Intrinsic.Control.EndIf
+
+'callwrapper to print report from script 3 button
+F.Intrinsic.Control.If(V.Caller.Hook,=,"13640")
+	F.Intrinsic.String.Left(V.Passed.000001,6,V.Local.sJob)
+	F.Intrinsic.String.Mid(V.Passed.000001,7,3,V.Local.sSuf)
+	'concat job, suffix, report ID
+	F.Intrinsic.String.Concat(V.Local.sJob,"!*!",V.Local.sSuf,"!*!","001811",V.Local.sParams)
+	F.Global.General.CallWrapperSync(900100,V.Local.sParams)
+F.Intrinsic.Control.EndIf
+
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4065_PRESS_BUYOFF_WO.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Main.End
+
+Program.Sub.Comments.Start
+${$0$}$GCG_PRESS_BUYOFF_WO$}$SFF$}$10/31/2014
+${$1$}$$}$$}$1$}$13640$}$WOS061-SCRIPT-3-HOOK$}$5/19/2016 8:34:08 AM$}$(Program: WOQUERY; Screen: WOS061)
+
+${$1$}$$}$$}$0$}$13580$}$WOS061-POPULATE-HOOK$}$5/19/2016 8:33:50 AM$}$(Program: WOQUERY; Screen: WOS061)
+
+Program.Sub.Comments.End
+
